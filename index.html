@@ -32,38 +32,59 @@
   <button id="place-order" class="hidden">Place Order</button>
 
   <script>
-    const menuItems = document.querySelectorAll('.menu-item');
-    const orderList = document.getElementById('order-list');
-    const placeOrderButton = document.getElementById('place-order');
-    let order = [];
+   const menuItems = document.querySelectorAll('.menu-item');
+const orderList = document.getElementById('order-list');
+const placeOrderButton = document.getElementById('place-order');
+const viewOrderButton = document.createElement('button'); // Dynamically create View Order button
+viewOrderButton.id = 'view-order';
+viewOrderButton.textContent = 'View Order';
+viewOrderButton.classList.add('hidden');
+document.body.appendChild(viewOrderButton); // Add the View Order button to the page
+let order = [];
 
-    // Add item to the order
-    menuItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const itemName = item.dataset.item;
-        order.push(itemName);
-        renderOrder();
-        placeOrderButton.classList.remove('hidden');
-      });
-    });
+// Add item to the order
+menuItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const itemName = item.dataset.item;
+    order.push(itemName);
+    renderOrder();
+    showButtons(); // Show both buttons after adding an item
+  });
+});
 
-    // Render the order list
-    function renderOrder() {
-      orderList.innerHTML = '';
-      order.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        orderList.appendChild(li);
-      });
-    }
+// Render the order list
+function renderOrder() {
+  orderList.innerHTML = '';
+  order.forEach(item => {
+    const li = document.createElement('li');
+    li.textContent = item;
+    orderList.appendChild(li);
+  });
+}
 
-    // Place order
-    placeOrderButton.addEventListener('click', () => {
-      const phoneNumber = '1234567890'; // Replace with your phone number
-      const smsBody = encodeURIComponent(`Order:\n${order.join(', ')}`);
-      const smsLink = `sms:${phoneNumber}?body=${smsBody}`;
-      window.location.href = smsLink;
-    });
+// Show "View Order" and "Place Order" buttons
+function showButtons() {
+  if (order.length > 0) {
+    placeOrderButton.classList.remove('hidden');
+    viewOrderButton.classList.remove('hidden');
+  } else {
+    placeOrderButton.classList.add('hidden');
+    viewOrderButton.classList.add('hidden');
+  }
+}
+
+// View Order functionality
+viewOrderButton.addEventListener('click', () => {
+  alert(`Your Order:\n${order.join(', ')}`);
+});
+
+// Place Order functionality
+placeOrderButton.addEventListener('click', () => {
+  const phoneNumber = '7143690148'; // Replace with your desired recipient number
+  const smsBody = encodeURIComponent(`Order:\n${order.join(', ')}\n\nPlease confirm.`);
+  const smsLink = `sms:${phoneNumber}?body=${smsBody}`;
+  window.location.href = smsLink;
+});
   </script>
 </body>
 </html>
