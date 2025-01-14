@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Online Ordering</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .menu-item {
+      cursor: pointer;
+      margin: 10px 0;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Menu</h1>
+  <div class="menu">
+    <div class="menu-item" data-item="Burger">🍔 Burger</div>
+    <div class="menu-item" data-item="Pizza">🍕 Pizza</div>
+    <div class="menu-item" data-item="Salad">🥗 Salad</div>
+  </div>
+
+  <h2>Your Order</h2>
+  <ul id="order-list"></ul>
+
+  <button id="place-order" class="hidden">Place Order</button>
+
+  <script>
+    const menuItems = document.querySelectorAll('.menu-item');
+    const orderList = document.getElementById('order-list');
+    const placeOrderButton = document.getElementById('place-order');
+    let order = [];
+
+    // Add item to the order
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const itemName = item.dataset.item;
+        order.push(itemName);
+        renderOrder();
+        placeOrderButton.classList.remove('hidden');
+      });
+    });
+
+    // Render the order list
+    function renderOrder() {
+      orderList.innerHTML = '';
+      order.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        orderList.appendChild(li);
+      });
+    }
+
+    // Place order
+    placeOrderButton.addEventListener('click', () => {
+      const phoneNumber = '1234567890'; // Replace with your phone number
+      const smsBody = encodeURIComponent(`Order:\n${order.join(', ')}`);
+      const smsLink = `sms:${phoneNumber}?body=${smsBody}`;
+      window.location.href = smsLink;
+    });
+  </script>
+</body>
+</html>
