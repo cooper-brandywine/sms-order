@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Online Ordering with Venmo QR Code</title>
+  <title>Online Ordering with Payment Options</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,7 +19,15 @@
     #qrcode {
       margin-top: 10px;
     }
+    .order-item-buttons button {
+      margin-left: 5px;
+      cursor: pointer;
+    }
+    #payment-options {
+      margin: 20px 0;
+    }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
   <h1>Menu</h1>
@@ -32,19 +40,37 @@
   <h2>Your Order</h2>
   <ul id="order-list"></ul>
 
-  <div id="qrcode" class="hidden"></div>
+  <div id="payment-options">
+    <label for="payment-method">Select Payment Method:</label>
+    <select id="payment-method">
+      <option value="" disabled selected>Choose a payment platform</option>
+      <option value="venmo">Venmo</option>
+      <option value="cashapp">Cash App</option>
+    </select>
+  </div>
 
   <button id="place-order" class="hidden">Place Order</button>
+  <button id="show-qr" class="hidden">Show QR Code</button>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <p id="qr-instructions" class="hidden">
+    If you're on a computer, click "Show QR Code" to pay with your phone.
+  </p>
+
+  <div id="qrcode" class="hidden"></div>
+
   <script>
     const menuItems = document.querySelectorAll('.menu-item');
     const orderList = document.getElementById('order-list');
+    const paymentMethodDropdown = document.getElementById('payment-method');
     const placeOrderButton = document.getElementById('place-order');
+    const showQrButton = document.getElementById('show-qr');
+    const qrInstructions = document.getElementById('qr-instructions');
     const qrCodeContainer = document.getElementById('qrcode');
 
     let order = [];
     let totalPrice = 0;
+    let selectedPaymentMethod = '';
+    let isQrVisible = false; // Track whether the QR code is currently visible
 
     // Add item to the order
     menuItems.forEach(item => {
@@ -52,13 +78,15 @@
         const itemName = item.dataset.item;
         const itemPrice = parseFloat(item.dataset.price);
 
-        order.push({ name: itemName, price: itemPrice });
+        const existingItem = order.find(o => o.name === itemName);
+        if (existingItem) {
+          existingItem.count += 1;
+        } else {
+          order.push({ name: itemName, price: itemPrice, count: 1 });
+        }
         totalPrice += itemPrice;
 
         renderOrder();
-        generateQrCode();
-        placeOrderButton.classList.remove('hidden');
-        qrCodeContainer.classList.remove('hidden');
       });
     });
 
@@ -67,53 +95,80 @@
       orderList.innerHTML = '';
       order.forEach(item => {
         const li = document.createElement('li');
-        li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
+        li.textContent = `${item.name} - $${item.price.toFixed(2)} x${item.count} ($${(item.price * item.count).toFixed(2)})`;
         orderList.appendChild(li);
       });
 
-      // Add total price at the end
+      // Add total price
       const totalLi = document.createElement('li');
       totalLi.textContent = `Total: $${totalPrice.toFixed(2)}`;
       totalLi.style.fontWeight = 'bold';
       orderList.appendChild(totalLi);
     }
 
-    // Generate Venmo QR Code
+    // Handle payment method selection
+    paymentMethodDropdown.addEventListener('change', () => {
+      selectedPaymentMethod = paymentMethodDropdown.value;
+      placeOrderButton.textContent = `Place Order with ${capitalize(selectedPaymentMethod)}`;
+      placeOrderButton.classList.remove('hidden');
+      showQrButton.classList.remove('hidden');
+      qrInstructions.classList.remove('hidden');
+
+      // Update QR code if it's already visible
+      if (isQrVisible) {
+        generateQrCode();
+      }
+    });
+
+    // Show QR Code
+    showQrButton.addEventListener('click', () => {
+      generateQrCode();
+      qrCodeContainer.classList.remove('hidden');
+      isQrVisible = true;
+    });
+
+    // Place Order
+    placeOrderButton.addEventListener('click', () => {
+      const paymentLinks = {
+        venmo: `venmo://paycharge?txn=pay&recipients=jamzinc&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
+        cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
+      };
+
+      const paymentUrl = paymentLinks[selectedPaymentMethod];
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      } else {
+        alert('Please select a valid payment method.');
+      }
+    });
+
+    // Generate QR Code
     function generateQrCode() {
-      const venmoUsername = 'your-venmo-username'; // Replace with your Venmo username
-       // Create a detailed note from the order
-      const detailedNote = order
-        .map(item => `${item.name} ($${item.price.toFixed(2)})`)
-        .join(', ');
-      const note = encodeURIComponent(`Order: ${detailedNote}`);
+      const paymentLinks = {
+        venmo: `venmo://paycharge?txn=pay&recipients=jamzinc&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
+        cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
+      };
 
-      const venmoLink = `venmo://paycharge?txn=pay&recipients=${venmoUsername}&amount=${totalPrice.toFixed(2)}&note=${note}`;
-
-      // Clear previous QR code
+      const qrLink = paymentLinks[selectedPaymentMethod];
       qrCodeContainer.innerHTML = '';
-
-      // Generate new QR code
-      new QRCode(qrCodeContainer, {
-        text: venmoLink,
-        width: 128,
-        height: 128,
-      });
+      if (qrLink) {
+        new QRCode(qrCodeContainer, {
+          text: qrLink,
+          width: 128,
+          height: 128
+        });
+      }
     }
 
-    // Place Order functionality
-    placeOrderButton.addEventListener('click', () => {
-      const venmoUsername = 'rustyshackleford'; // Replace with your Venmo username
-        // Create a detailed note from the order
-      const detailedNote = order
-        .map(item => `${item.name} ($${item.price.toFixed(2)})`)
-        .join(', ');
-      const note = encodeURIComponent(`Order: ${detailedNote}`);
+    // Get order summary
+  function getOrderSummary() {
+    return order.map(item => `${item.name} x${item.count}`).join(', ');
+  }
 
-      const venmoLink = `venmo://paycharge?txn=pay&recipients=${venmoUsername}&amount=${totalPrice.toFixed(2)}&note=${note}`;
-      
-      // Redirect to Venmo
-      window.location.href = venmoLink;
-    });
+    // Capitalize first letter of a word
+    function capitalize(word) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    }
   </script>
 </body>
 </html>
