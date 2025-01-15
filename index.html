@@ -89,13 +89,14 @@ viewOrderButton.addEventListener('click', () => {
   alert(`Your Order:\n${orderDetails}\n\nTotal: $${totalPrice.toFixed(2)}`);
 });
 
-// Place Order functionality
+ // Place Order functionality
     placeOrderButton.addEventListener('click', () => {
-      const phoneNumber = '7143690148'; // Replace with your desired recipient number
-      const orderDetails = order.map(item => `${item.name} - $${item.price.toFixed(2)}`).join(', ');
-      const smsBody = encodeURIComponent(`Order:\n${orderDetails}\n\nTotal: $${totalPrice.toFixed(2)}\n\nPlease confirm.`);
-      const smsLink = `sms:${phoneNumber}?body=${smsBody}`;
-      window.location.href = smsLink;
+      const venmoUsername = 'rustyshackleford'; // Replace with your Venmo username
+      const note = encodeURIComponent('Payment for order');
+      const venmoLink = `venmo://paycharge?txn=pay&recipients=${venmoUsername}&amount=${totalPrice.toFixed(2)}&note=${note}`;
+      
+      // Redirect to Venmo
+      window.location.href = venmoLink;
     });
   </script>
 </body>
