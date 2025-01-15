@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Online Ordering</title>
+  <title>Online Ordering with Venmo QR Code</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -16,23 +16,29 @@
     .hidden {
       display: none;
     }
+    #qrcode {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>Menu</h1>
   <div class="menu">
-    <div class="menu-item" data-item="Burger" data-price="7.99">🍔 Burger</div>
-    <div class="menu-item" data-item="Pizza" data-price="12.99">🍕 Pizza</div>
-    <div class="menu-item" data-item="Salad" data-price="9.99">🥗 Salad</div>
+    <div class="menu-item" data-item="Burger" data-price="5.99">🍔 Burger - $5.99</div>
+    <div class="menu-item" data-item="Pizza" data-price="8.99">🍕 Pizza - $8.99</div>
+    <div class="menu-item" data-item="Salad" data-price="4.99">🥗 Salad - $4.99</div>
   </div>
 
   <h2>Your Order</h2>
   <ul id="order-list"></ul>
 
+  <div id="qrcode" class="hidden"></div>
+
   <button id="place-order" class="hidden">Place Order</button>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
-   const menuItems = document.querySelectorAll('.menu-item');
+    const menuItems = document.querySelectorAll('.menu-item');
     const orderList = document.getElementById('order-list');
     const placeOrderButton = document.getElementById('place-order');
     const qrCodeContainer = document.getElementById('qrcode');
