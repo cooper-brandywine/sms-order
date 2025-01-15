@@ -30,66 +30,66 @@
   <ul id="order-list"></ul>
 
   <button id="place-order" class="hidden">Place Order</button>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
    const menuItems = document.querySelectorAll('.menu-item');
-const orderList = document.getElementById('order-list');
-const placeOrderButton = document.getElementById('place-order');
-const viewOrderButton = document.createElement('button'); // Dynamically create View Order button
-viewOrderButton.id = 'view-order';
-viewOrderButton.textContent = 'View Order';
-viewOrderButton.classList.add('hidden');
-document.body.appendChild(viewOrderButton); // Add the View Order button to the page
-let order = [];
-let totalPrice = 0;
-    
-// Add item to the order
-menuItems.forEach(item => {
-  item.addEventListener('click', () => {
-    const itemName = item.dataset.item;
-    const itemPrice = parseFloat(item.dataset.price);
-    order.push({ name: itemName, price: itemPrice });
-    totalPrice += itemPrice;
-    
-    renderOrder();
-    showButtons(); // Show both buttons after adding an item
-  });
-});
+    const orderList = document.getElementById('order-list');
+    const placeOrderButton = document.getElementById('place-order');
+    const qrCodeContainer = document.getElementById('qrcode');
 
-// Render the order list
-function renderOrder() {
-  orderList.innerHTML = '';
-  order.forEach(item => {
-    const li = document.createElement('li');
-    li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
-    orderList.appendChild(li);
-  });
+    let order = [];
+    let totalPrice = 0;
 
-  // Add total price at the end
+    // Add item to the order
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const itemName = item.dataset.item;
+        const itemPrice = parseFloat(item.dataset.price);
+
+        order.push({ name: itemName, price: itemPrice });
+        totalPrice += itemPrice;
+
+        renderOrder();
+        generateQrCode();
+        placeOrderButton.classList.remove('hidden');
+        qrCodeContainer.classList.remove('hidden');
+      });
+    });
+
+    // Render the order list
+    function renderOrder() {
+      orderList.innerHTML = '';
+      order.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
+        orderList.appendChild(li);
+      });
+
+      // Add total price at the end
       const totalLi = document.createElement('li');
       totalLi.textContent = `Total: $${totalPrice.toFixed(2)}`;
       totalLi.style.fontWeight = 'bold';
       orderList.appendChild(totalLi);
-}
+    }
 
-// Show "View Order" and "Place Order" buttons
-function showButtons() {
-  if (order.length > 0) {
-    placeOrderButton.classList.remove('hidden');
-    viewOrderButton.classList.remove('hidden');
-  } else {
-    placeOrderButton.classList.add('hidden');
-    viewOrderButton.classList.add('hidden');
-  }
-}
+    // Generate Venmo QR Code
+    function generateQrCode() {
+      const venmoUsername = 'your-venmo-username'; // Replace with your Venmo username
+      const note = encodeURIComponent('Payment for order');
+      const venmoLink = `venmo://paycharge?txn=pay&recipients=${venmoUsername}&amount=${totalPrice.toFixed(2)}&note=${note}`;
 
-// View Order functionality
-viewOrderButton.addEventListener('click', () => {
-  const orderDetails = order.map(item => `${item.name} - $${item.price.toFixed(2)}`).join('\n');
-  alert(`Your Order:\n${orderDetails}\n\nTotal: $${totalPrice.toFixed(2)}`);
-});
+      // Clear previous QR code
+      qrCodeContainer.innerHTML = '';
 
- // Place Order functionality
+      // Generate new QR code
+      new QRCode(qrCodeContainer, {
+        text: venmoLink,
+        width: 128,
+        height: 128,
+      });
+    }
+
+    // Place Order functionality
     placeOrderButton.addEventListener('click', () => {
       const venmoUsername = 'rustyshackleford'; // Replace with your Venmo username
       const note = encodeURIComponent('Payment for order');
