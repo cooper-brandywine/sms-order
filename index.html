@@ -87,19 +87,83 @@
         totalPrice += itemPrice;
 
         renderOrder();
+        if (isQrVisible) generateQrCode();
       });
     });
 
     // Render the order list
     function renderOrder() {
       orderList.innerHTML = '';
-      order.forEach(item => {
+      order.forEach((item, index) => {
         const li = document.createElement('li');
         li.textContent = `${item.name} - $${item.price.toFixed(2)} x${item.count} ($${(item.price * item.count).toFixed(2)})`;
+
+        // Create quantity management buttons
+        const buttons = document.createElement('div');
+        buttons.classList.add('order-item-buttons');
+
+        // Add one
+        const addOneButton = document.createElement('button');
+        addOneButton.textContent = '+';
+        addOneButton.onclick = () => {
+          item.count += 1;
+          totalPrice += item.price;
+          renderOrder();
+          if (isQrVisible) generateQrCode();
+        };
+
+        // Remove one
+        const removeOneButton = document.createElement('button');
+        removeOneButton.textContent = '-';
+        removeOneButton.onclick = () => {
+          if (item.count > 1) {
+            item.count -= 1;
+            totalPrice -= item.price;
+          } else {
+            totalPrice -= item.price;
+            order.splice(index, 1);
+          }
+          renderOrder();
+          if (isQrVisible) generateQrCode();
+
+          // Hide buttons if the order is empty
+          if (order.length === 0) {
+            placeOrderButton.classList.add('hidden');
+            showQrButton.classList.add('hidden');
+            qrInstructions.classList.add('hidden');
+            qrCodeContainer.classList.add('hidden');
+            isQrVisible = false;
+          }
+        };
+
+        // Remove all
+        const removeAllButton = document.createElement('button');
+        removeAllButton.textContent = 'Remove All';
+        removeAllButton.onclick = () => {
+          totalPrice -= item.price * item.count;
+          order.splice(index, 1);
+          renderOrder();
+          if (isQrVisible) generateQrCode();
+
+          // Hide buttons if the order is empty
+          if (order.length === 0) {
+            placeOrderButton.classList.add('hidden');
+            showQrButton.classList.add('hidden');
+            qrInstructions.classList.add('hidden');
+            qrCodeContainer.classList.add('hidden');
+            isQrVisible = false;
+          }
+        };
+
+        // Append buttons to the list item
+        buttons.appendChild(addOneButton);
+        buttons.appendChild(removeOneButton);
+        buttons.appendChild(removeAllButton);
+        li.appendChild(buttons);
         orderList.appendChild(li);
       });
 
-      // Add total price
+      // Add total price at the end
       const totalLi = document.createElement('li');
       totalLi.textContent = `Total: $${totalPrice.toFixed(2)}`;
       totalLi.style.fontWeight = 'bold';
@@ -145,7 +209,7 @@
     // Generate QR Code
     function generateQrCode() {
       const paymentLinks = {
-        venmo: `venmo://paycharge?txn=pay&recipients=jamzinc&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
+        venmo: `venmo://paycharge?txn=pay&recipients=jamzince&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
         cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
       };
 
@@ -161,9 +225,9 @@
     }
 
     // Get order summary
-  function getOrderSummary() {
-    return order.map(item => `${item.name} x${item.count}`).join(', ');
-  }
+    function getOrderSummary() {
+      return order.map(item => `${item.name} x${item.count}`).join(', ');
+    }
 
     // Capitalize first letter of a word
     function capitalize(word) {
