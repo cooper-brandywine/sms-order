@@ -81,7 +81,12 @@
     // Generate Venmo QR Code
     function generateQrCode() {
       const venmoUsername = 'your-venmo-username'; // Replace with your Venmo username
-      const note = encodeURIComponent('Payment for order');
+       // Create a detailed note from the order
+      const detailedNote = order
+        .map(item => `${item.name} ($${item.price.toFixed(2)})`)
+        .join(', ');
+      const note = encodeURIComponent(`Order: ${detailedNote}`);
+
       const venmoLink = `venmo://paycharge?txn=pay&recipients=${venmoUsername}&amount=${totalPrice.toFixed(2)}&note=${note}`;
 
       // Clear previous QR code
@@ -98,7 +103,12 @@
     // Place Order functionality
     placeOrderButton.addEventListener('click', () => {
       const venmoUsername = 'rustyshackleford'; // Replace with your Venmo username
-      const note = encodeURIComponent('Payment for order');
+        // Create a detailed note from the order
+      const detailedNote = order
+        .map(item => `${item.name} ($${item.price.toFixed(2)})`)
+        .join(', ');
+      const note = encodeURIComponent(`Order: ${detailedNote}`);
+
       const venmoLink = `venmo://paycharge?txn=pay&recipients=${venmoUsername}&amount=${totalPrice.toFixed(2)}&note=${note}`;
       
       // Redirect to Venmo
