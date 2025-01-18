@@ -31,6 +31,7 @@
 </head>
 <body>
   <h1>Menu</h1>
+  <p>Tap or Click any item to order.</p>
   <div class="menu">
     <div class="menu-item" data-item="Burger" data-price="5.99">🍔 Burger - $5.99</div>
     <div class="menu-item" data-item="Pizza" data-price="8.99">🍕 Pizza - $8.99</div>
@@ -195,7 +196,8 @@
     placeOrderButton.addEventListener('click', () => {
       const paymentLinks = {
         venmo: `venmo://paycharge?txn=pay&recipients=jamzinc&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
-        cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
+        cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`,
+        sms: `sms:7143690148&body=${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
       };
 
       const paymentUrl = paymentLinks[selectedPaymentMethod];
@@ -210,7 +212,9 @@
     function generateQrCode() {
       const paymentLinks = {
         venmo: `venmo://paycharge?txn=pay&recipients=jamzince&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
-        cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
+        cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`,
+        sms: `sms:7143690148&body=${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
+      };
       };
 
       const qrLink = paymentLinks[selectedPaymentMethod];
