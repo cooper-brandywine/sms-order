@@ -196,8 +196,8 @@
     // Place Order
     placeOrderButton.addEventListener('click', () => {
       const paymentLinks = {
-        venmo: `venmo://paycharge?txn=pay&recipients=jamzinc&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
-        cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`,
+        venmo: `venmo://paycharge?txn=pay&recipients=coopercarrasco&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
+        cashapp: `https://cash.app/$coopercarrasco/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`,
         sms: `sms:7143690148&body=${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
       };
 
@@ -212,10 +212,9 @@
     // Generate QR Code
     function generateQrCode() {
       const paymentLinks = {
-        venmo: `venmo://paycharge?txn=pay&recipients=jamzince&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
-        cashapp: `https://cash.app/$blazedigitalblunts/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`,
+        venmo: `venmo://paycharge?txn=pay&recipients=coopercarrasco&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
+        cashapp: `https://cash.app/$coopercarrasco/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`,
         sms: `sms:7143690148&body=${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
-      };
       };
 
       const qrLink = paymentLinks[selectedPaymentMethod];
