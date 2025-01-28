@@ -198,7 +198,7 @@
       const paymentLinks = {
         venmo: `venmo://paycharge?txn=pay&recipients=coopercarrasco&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
         cashapp: `https://cash.app/$coopercarrasco/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`,
-        sms: `sms:7143690148&body=${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
+        sms: `sms:7143690148&body=${encodeURIComponent(getOrderSummary())}%20${totalPrice.toFixed(2)}`
       };
 
       const paymentUrl = paymentLinks[selectedPaymentMethod];
@@ -214,7 +214,7 @@
       const paymentLinks = {
         venmo: `venmo://paycharge?txn=pay&recipients=coopercarrasco&amount=${totalPrice.toFixed(2)}&note=${encodeURIComponent(getOrderSummary())}`,
         cashapp: `https://cash.app/$coopercarrasco/${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`,
-        sms: `sms:7143690148&body=${totalPrice.toFixed(2)}?note=${encodeURIComponent(getOrderSummary())}`
+        sms: `sms:7143690148&body=${encodeURIComponent(getOrderSummary())}%20${totalPrice.toFixed(2)}`
       };
 
       const qrLink = paymentLinks[selectedPaymentMethod];
